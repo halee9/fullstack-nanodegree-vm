@@ -88,16 +88,18 @@ def testReportMatches():
     registerPlayer("Diane Grant")
     standings = playerStandings()
     [id1, id2, id3, id4] = [row[0] for row in standings]
-    reportMatch(id1, id2)
-    reportMatch(id3, id4)
+    reportMatch(id1, id2, False)
+    reportMatch(id3, id4, True) # this match is draw
     standings = playerStandings()
     for (i, n, w, m) in standings:
         if m != 1:
             raise ValueError("Each player should have one match recorded.")
-        if i in (id1, id3) and w != 1:
+        if i == id1 and w != 1:
             raise ValueError("Each match winner should have one win recorded.")
-        elif i in (id2, id4) and w != 0:
+        elif i == id2 and w != 0:
             raise ValueError("Each match loser should have zero wins recorded.")
+        elif i in (id3, id4) and w != 0:
+            raise ValueError("Each should have zero wins recorded because the match was draw.")
     print "7. After a match, players have updated standings."
 
 
@@ -108,21 +110,34 @@ def testPairings():
     registerPlayer("Fluttershy")
     registerPlayer("Applejack")
     registerPlayer("Pinkie Pie")
+    registerPlayer("Bruno Walton")
+    registerPlayer("Boots O'Neal")
+    registerPlayer("Cathy Burton")
+    registerPlayer("Diane Grant")
     standings = playerStandings()
-    [id1, id2, id3, id4] = [row[0] for row in standings]
-    reportMatch(id1, id2)
-    reportMatch(id3, id4)
+    [id1, id2, id3, id4, id5, id6, id7, id8] = [row[0] for row in standings]
+    reportMatch(id1, id2, False)
+    reportMatch(id3, id4, False)
+    reportMatch(id5, id6, True) # this match is draw
+    reportMatch(id7, id8, False)
     pairings = swissPairings()
-    if len(pairings) != 2:
+    if len(pairings) != 4:
         raise ValueError(
             "For four players, swissPairings should return two pairs.")
-    [(pid1, pname1, pid2, pname2), (pid3, pname3, pid4, pname4)] = pairings
-    correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
+    [(pid1, pname1, pid2, pname2), (pid3, pname3, pid4, pname4),
+     (pid5, pname5, pid6, pname6), (pid7, pname7, pid8, pname8)] = pairings
+    #correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
+    correct_pairs = set([frozenset([id1, id3]), frozenset([id7, id2])])
     actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
     if correct_pairs != actual_pairs:
         raise ValueError(
             "After one match, players with one win should be paired.")
     print "8. After one match, players with one win are paired."
+    # setting next rounds for test
+    reportMatch(pid1, pid2, False)
+    reportMatch(pid3, pid4, False)
+    reportMatch(pid5, pid6, False)
+    reportMatch(pid7, pid8, False)
 
 
 if __name__ == '__main__':
