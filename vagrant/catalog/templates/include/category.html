@@ -1,0 +1,23 @@
+<h4>
+    <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span> Categories
+</h4>
+{% if user.id: %}
+<p class="text-right"><a href="{{ url_for('new_category') }}">Add category</a></p>
+{% endif %}
+<ul class="list-group">
+    {% if not categories: %}
+        <p>No category found.</p>
+    {% endif %}
+    {% for category in categories %}
+    <li class="list-group-item">
+        {% if user.id and user.id == category.user_id: %}
+        <div class="pull-right small">
+            <a href="{{url_for('edit_category', category_id=category.id)}}">Edit</a>
+            |
+            <a href="{{url_for('delete_category', category_id=category.id)}}">Delete</a>
+        </div>
+        {% endif %}
+        <a href="/category/{{category.id}}/item">{{category.name}}</a>
+    </li>
+    {% endfor %}
+</ul>

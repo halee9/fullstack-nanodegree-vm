@@ -1,0 +1,26 @@
+{% if not items: %}
+    <p>No item found.</p>
+{% endif %}
+{% if user.id: %}
+<a class="pull-right" href="{{url_for('new_item')}}">Add item</a>
+{% endif %}
+<div class="list">
+{% for item in items %}
+    <div class="list-item">
+        <div class="list-content">
+            {% if not category: %}
+            <div class="small">{{ item.category.name }}</div>
+            {% endif %}
+            <h4>
+                <a href="{{url_for('show_item', item_id=item.id)}}">{{item.name}}</a>
+            </h4>
+            {% if item.image_path: %}
+            <img src="{{url_for('send_uploaded_image', path=item.image_path)}}" class="img-responsive">
+            {% endif %}
+            <!--
+            <p>{{item.description}}</p>
+            -->
+        </div>
+    </div>
+{% endfor %}
+</div>

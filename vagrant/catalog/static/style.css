@@ -1,0 +1,49 @@
+.header-bar {
+    background-color: #aaa;
+    width: 100%;
+    line-height: 150%;
+    color: #fff;
+}
+
+h3, h4 {
+  margin-top: 0;
+  margin-bottom: 0.4em;
+}
+
+.list {
+    width: 100%;
+    display: -webkit-inline-flex; /* Safari */
+    display: inline-flex;
+    -webkit-flex-wrap: wrap; /* Safari */
+    flex-wrap:         wrap;
+}
+.list-item {
+    display: flex;
+    padding: 0.5em;
+    width: 100%;
+}
+
+@media all and (min-width: 30em) {
+    .list-item {
+        width: 50%;
+    }
+}
+@media all and (min-width: 60em) {
+    .list-item {
+        width: 33.33%;
+    }
+}
+@media all and (min-width: 80em) {
+    .list-item {
+        width: 25%;
+    }
+}
+
+.list-content {
+    background-color: #eee;
+    padding: 1em;
+    width: 100%;
+}
+.list-content p {
+    flex: 1 0 auto;
+}

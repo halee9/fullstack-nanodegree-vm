@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h4>Delete Category</h4>
+{% if numberOfItems < 1: %}
+    <p>Are you sure you want to delete ?</p>
+    <form action="{{url_for('delete_category', category_id=category.id)}}" method = 'post'>
+        <button type="submit" class="btn btn-default" id="submit">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+        </button>
+    </form>
+{% else %}
+    <p>You cannot delete the category due to {{ numberOfItems }} items in this category.</p>
+    <button type="button" class="btn btn-default">
+        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Cancel
+    </button>
+{% endif %}
+
+{% endblock %}

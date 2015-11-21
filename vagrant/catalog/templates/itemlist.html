@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="hidden-xs col-sm-3">
+        {% include "include/category.html" %}
+    </div>
+    <div class="col-xs-12 col-sm-9">
+        <ol class="breadcrumb">
+            <li><a href="{{url_for('show_home')}}">Home</a></li>
+            <li>{{category.name}}</li>
+        </ol>
+        <div>
+            <h4>
+                <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
+                <span>&nbsp;{{category.name}}&nbsp;</span>
+                <span class="label label-default pull-right">{{items|length}} items</span>
+            </h4>
+        </div>
+        {% include "include/items.html" %}
+    </div>
+</div>
+
+{% endblock %}

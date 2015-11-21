@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="col-sm-3">
+        {% include "include/category.html" %}
+    </div>
+    <div class="col-sm-9">
+        <ol class="breadcrumb">
+            <li>Home</li>
+        </ol>
+        <h4><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Latest Item</h4>
+        {% include "include/items.html" %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="hidden-xs col-sm-3">
+        {% include "include/category.html" %}
+    </div>
+    <div class="col-xs-12 col-sm-9">
+        <ol class="breadcrumb">
+            <li><a href="{{url_for('show_home')}}">Home</a></li>
+            <li><a href="{{url_for('show_items_by_category', category_id=item.category_id)}}">{{category.name}}</a></li>
+            <li>{{item.name}}</li>
+        </ol>
+        <h3>{{item.name}} - {{category.name}}</h3>
+        <p>{{item.description}}</p>
+        {% if item.image_path: %}
+            <div>
+                <img src="{{url_for('send_uploaded_image', path=item.image_path)}}" width="200">
+            </div>
+        {% endif %}
+        {% if user.id and user.id == item.user_id: %}
+        <a href="{{url_for('edit_item', item_id=item.id)}}">Edit</a>
+        <span> | </span>
+        <a href="{{url_for('delete_item', item_id=item.id)}}">Delete</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

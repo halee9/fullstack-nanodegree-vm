@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="row">
+    <h4>New Category</h4>
+    <form action="/category/new" method="POST">
+        <div class="form-group">
+            <label>Name: </label>
+            <input type="text" name="name" value="" class="form-control" placeholder="Category name here">
+        </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+</div>
+
+{% endblock %}
+
