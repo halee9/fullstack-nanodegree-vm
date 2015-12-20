@@ -19,6 +19,8 @@ import json
 from flask import make_response
 import requests
 
+from functools import wraps
+
 app = Flask(__name__)
 
 # upload files only following extensions
@@ -112,7 +114,7 @@ def gconnect():
         return response
 
     # Store the access token in the session for later use.
-    login_session['credentials'] = credentials
+    login_session['credentials'] = credentials.to_json()
     login_session['gplus_id'] = gplus_id
 
     # Get user info
@@ -140,13 +142,13 @@ def gconnect():
 @app.route('/gdisconnect')
 def gdisconnect():
     # Only disconnect a connected user.
-    credentials = login_session.get('credentials')
+    credentials = json.loads(login_session.get('credentials'))
     if credentials is None:
         response = make_response(
             json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    access_token = credentials.access_token
+    access_token = credentials['access_token']
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
@@ -215,8 +217,17 @@ def upload_file(file, id):
     return ""
 
 def delete_file(filename):
-    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    if filename:
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return ""
+# Login Required Decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in login_session:
+            return redirect(url_for('show_login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # JSON APIs to view Catalog Information
 @app.route('/item/JSON')
@@ -225,7 +236,7 @@ def catalogJSON():
     return jsonify(Items=[i.serialize for i in items])
 
 @app.route('/category/<int:category_id>/item/JSON')
-def itemsByCategoryJSON():
+def itemsByCategoryJSON(category_id):
     category = session.query(Category).filter_by(id = category_id).one()
     items = session.query(Item).filter_by(category_id = category_id).order_by(desc(Item.name)).all()
     return jsonify(Items=[i.serialize for i in items])
@@ -260,9 +271,8 @@ def show_items_by_category(category_id):
 
 # create item
 @app.route('/item/new', methods=['GET', 'POST'])
+@login_required
 def new_item():
-    if 'user_id' not in login_session:
-        return redirect(url_for('show_login'))
     if request.method == 'POST':
         newItem = Item( name = request.form['name'],
             description = request.form['description'],
@@ -281,7 +291,7 @@ def new_item():
         flash('New Item %s Successfully Created' % newItem.name)
         return redirect(url_for('show_items_by_category', category_id=newItem.category_id))
     else:
-        return render_template('new_item.html', categories = get_all_categories())
+        return render_template('new_item.html', categories = get_all_categories(), user=logged_in())
 
 # display a item
 @app.route('/item/<int:item_id>')
@@ -297,9 +307,8 @@ def show_item(item_id):
 
 # modify item
 @app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_item(item_id):
-    if 'user_id' not in login_session:
-        return redirect(url_for('show_login'))
     editedItem = session.query(Item).filter_by(id = item_id).one()
     category = session.query(Category).filter_by(id = editedItem.category_id).one()
     if request.method == 'POST':
@@ -324,9 +333,8 @@ def edit_item(item_id):
 
 # delete item
 @app.route('/item/<int:item_id>/delete', methods=['GET', 'POST'])
+@login_required
 def delete_item(item_id):
-    if 'user_id' not in login_session:
-        return redirect(url_for('show_login'))
     itemToDelete = session.query(Item).filter_by(id = item_id).one()
     category = session.query(Category).filter_by(id = itemToDelete.category_id).one()
     if request.method == 'POST':
@@ -341,9 +349,8 @@ def delete_item(item_id):
 
 # create new category
 @app.route('/category/new', methods=['GET', 'POST'])
+@login_required
 def new_category():
-    if 'user_id' not in login_session:
-        return redirect(url_for('show_login'))
     if request.method == 'POST':
         newCategory = Category( name = request.form['name'],
             user_id = login_session['user_id'])
@@ -353,13 +360,12 @@ def new_category():
         flash('New Category %s Successfully Created' % newCategory.name)
         return redirect(url_for('show_home'))
     else:
-        return render_template('new_category.html')
+        return render_template('new_category.html', user=logged_in())
 
 # modify the category
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_category(category_id):
-    if 'user_id' not in login_session:
-        return redirect(url_for('show_login'))
     editedCategory = session.query(Category).filter_by(id = category_id).one()
     if request.method == 'POST':
         if request.form['name']:
@@ -373,9 +379,8 @@ def edit_category(category_id):
 
 # delete category
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
+@login_required
 def delete_category(category_id):
-    if 'user_id' not in login_session:
-        return redirect(url_for('show_login'))
     categoryToDelete = session.query(Category).filter_by(id = category_id).one()
     item_count = session.query(Item).filter_by(category_id = categoryToDelete.id).count()
     if request.method == 'POST':

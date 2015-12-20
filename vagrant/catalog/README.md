@@ -30,6 +30,7 @@ Catalog App is a web application that provide a list of items within a veriety o
     f. Then **click Create Client ID**. Now that we see that our web application has a client ID complete with email address, client secret, redirect URIs, and JavaScript origins. Now let's go ahead and click **Edit Settings**.
     g. In the **authorized JavaScript origins**, add http://localhost:5000. And in the **Authorized redirect URIs**, add http://localhost:5000/login and http://localhost:5000/gconnect. and click **Update"
     h. Click **Download JSON** button, save downloaded file in your **catalog** folder on your local computer.
+    i. Open **login.html** from templates folder, and find line 10 **data-clientid** and set your own **client ID** as the value.
 
 8. Type **python app.py** to run the Flask web server. In your browser visit **http://localhost:5000** to view the catalog app. You should be able to view, add, edit, and delete items and catagories.
 
